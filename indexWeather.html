@@ -1,0 +1,113 @@
+<html>
+    <head>
+        <link href="https://fonts.googleapis.com/css?family=Sedgwick+Ave+Display" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css?family=Poiret+One|Sedgwick+Ave+Display" rel="stylesheet">
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.16/angular.min.js"></script>
+        <style>
+            body{font-family: 'Sedgwick Ave Display', cursive;
+            margin:0 auto;
+            text-align:center;
+            background-repeat: no-repeat;
+            color:white;
+            }
+            p{
+                font-size:2em;
+                margin:0.2em;
+                font-family: 'Poiret One', cursive;
+
+            }
+            .topic{
+                font-size:3em;
+                margin:0;
+                display:inline;
+            }
+            .nameApp{
+                color:yellow;
+                font-size: 1.5em;
+            }
+            img{
+                margin-right:1em;
+                background-repeat: no-repeat;
+            }
+            .error-message{
+                background-color: firebrick;
+                font-size: 3em;
+            }
+            .error{
+                font-size:3em;
+                margin:0em;
+                
+            }
+
+            button{
+                    background-color: #4CAF50; /* Green */
+                    border: none;
+                    color: white;
+            }
+        </style>
+    </head>
+    <body ng-app="myApp" style="background-color:black">
+        <div ng-controller="myController">
+
+            <h1 style="margin: 0 auto;text-align:center;font-size:4em;margin-top:0.5em">Weather Angular <span class="nameApp">App</span></h1>
+
+                <input style="margin-top:1em;margin-bottom:1em;" placeholder='Type the name of a city' type="text" ng-model="input"/>
+                <button ng-click="doResearch(input)">Search</button>
+                <br>
+            <div style="background-color: rgba(47, 40, 113, 0.73);margin-top:1em">
+                <div ng-if="status==200">
+                    
+
+                    <image src="humidity.png"><p class="topic">Humidity</p><p>{{data.main.humidity}}</p>
+                    <image src="pressure.png"><p class="topic">Pressure</p><p>{{data.main.pressure}}</p>
+                    <image src="temp.png"><p class="topic">Temperature</p><p>{{data.main.temp}}</p>
+                    <image src="max-temp.png"><p class="topic">Max temperature</p><p>{{data.main.temp_max}}</p>
+                    <image src="min-temp.png"><p class="topic">Min temperature</p><p>{{data.main.temp_min}}</p>
+                </div>
+
+                <div class="error-message" ng-if="status>=400">
+                    <p class="error">Error</p>
+                    {{ error }}
+                    {{data}}
+                </div>
+            </div>
+        </div>
+        <script>
+            //criação do módulo myApp
+            var myApp = angular.module('myApp',[]);
+            //criação da controller
+            myApp.controller('myController', function($scope, $http){
+
+                var time = new Date();
+                console.log(time.getHours());
+                if(time.getHours>=18){
+                    $scope.isDay=false;
+                }
+                else{
+                    $scope.isDay=true;
+                }
+
+                var onSuccess = function(data, status, headers, config){
+                    $scope.data = data;
+                    $scope.status = status;
+                    console.log($scope.data);
+                };
+
+                var onError = function(data, status, headers, config){
+                    $scope.data = data.message;
+                    $scope.status = status;
+                    $scope.error = status;
+                };
+
+                $scope.doResearch = function(input){
+                                    var url = "http://api.openweathermap.org/data/2.5/weather?q="+input;
+                                    var promise = $http.get(url+'&appid=7f7ad5377043a73c9b4cb85c0904441a');
+                                    promise.success(onSuccess).error(onError);
+
+                };
+
+                
+            });
+        </script>
+    </body>
+</html>
